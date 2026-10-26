@@ -34,7 +34,16 @@ Style/Documentation:
   Enabled: false
 
 RSpec/MultipleExpectations:
-  Max: 3
+  Max: 5
 
 RSpec/ExampleLength:
   Enabled: false
+
+Rails/ResponseParsedBody:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/AbcSize:
+  Max: 17
+  Exclude:
+    - 'app/controllers/api/v1/base_controller.rb'

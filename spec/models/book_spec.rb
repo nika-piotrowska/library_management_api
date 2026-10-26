@@ -24,12 +24,6 @@ RSpec.describe Book, type: :model do
       expect(book.errors[:author]).to be_present
     end
 
-    it 'requires a serial number' do
-      book.serial_number = nil
-
-      expect(book).not_to be_valid
-    end
-
     it 'requires exactly six digits in the serial number' do
       book.serial_number = '12345'
 
@@ -49,12 +43,53 @@ RSpec.describe Book, type: :model do
     end
 
     it 'requires a unique serial number' do
-      create(:book, serial_number: '123456')
+      existing_book = create(:book)
 
-      book.serial_number = '123456'
+      book.serial_number = existing_book.serial_number
 
       expect(book).not_to be_valid
       expect(book.errors[:serial_number]).to be_present
+    end
+  end
+
+  describe 'serial number generation' do
+    it 'generates a serial number automatically when creating a book' do
+      book = create(:book)
+
+      expect(book.serial_number).to match(/\A[0-9]{6}\z/)
+    end
+
+    it 'generates a serial number based on the book ID' do
+      book = create(:book)
+
+      expect(book.serial_number).to eq(format('%06d', book.id))
+    end
+
+    it 'generates unique serial numbers for different books' do
+      first_book = create(:book)
+      second_book = create(:book)
+
+      expect(first_book.serial_number).not_to eq(second_book.serial_number)
+    end
+
+    it 'generates a serial number when none is provided' do
+      book = described_class.new(
+        title: 'Dune',
+        author: 'Frank Herbert'
+      )
+
+      book.save!
+
+      expect(book.serial_number).to eq(format('%06d', book.id))
+    end
+
+    it 'does not change the serial number when updating a book' do
+      book = create(:book)
+      original_serial_number = book.serial_number
+
+      book.update!(title: 'Updated title')
+
+      expect(book.reload.serial_number).to eq(original_serial_number)
     end
   end
 

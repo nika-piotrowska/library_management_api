@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 class Book < ApplicationRecord
+  MAX_SERIAL_NUMBER = 999_999
+
   has_many :borrowings, dependent: :restrict_with_error
   has_many :readers, through: :borrowings
+
+  before_validation :generate_serial_number, on: :create
 
   validates :serial_number,
             presence: true,
@@ -29,5 +33,36 @@ class Book < ApplicationRecord
 
   def archived?
     archived_at.present?
+  end
+
+  private
+
+  def generate_serial_number
+    return if serial_number.present?
+
+    name = sequence_name
+    n_id = next_id(name)
+
+    if n_id > MAX_SERIAL_NUMBER
+      errors.add(:serial_number, 'number range exhausted')
+      return
+    end
+
+    self.id = n_id
+    self.serial_number = format('%06d', n_id)
+  end
+
+  def sequence_name
+    self.class.connection.quote(
+      self.class.connection.select_value(
+        "SELECT pg_get_serial_sequence('books', 'id')"
+      )
+    )
+  end
+
+  def next_id(name)
+    self.class.connection.select_value(
+      "SELECT nextval(#{name})"
+    ).to_i
   end
 end
