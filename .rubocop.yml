@@ -17,11 +17,15 @@ AllCops:
 
 Metrics/BlockLength:
   Exclude:
-    - "spec/**/*"
-    - "config/routes.rb"
+    - 'spec/**/*'
+    - 'db/migrate/**/*'
+    - 'config/routes.rb'
 
 Metrics/MethodLength:
   Max: 15
+  Exclude:
+    - 'db/migrate/**/*'
+    - 'spec/**/*'
 
 Layout/LineLength:
   Max: 120
@@ -31,3 +35,6 @@ Style/Documentation:
 
 RSpec/MultipleExpectations:
   Max: 3
+
+RSpec/ExampleLength:
+  Enabled: false

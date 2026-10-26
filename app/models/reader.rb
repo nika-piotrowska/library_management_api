@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Reader < ApplicationRecord
+  has_many :borrowings, dependent: :restrict_with_error
+  has_many :books, through: :borrowings
+
   validates :library_card_number,
             presence: true,
             uniqueness: true,

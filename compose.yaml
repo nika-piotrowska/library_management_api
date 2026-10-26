@@ -21,6 +21,9 @@ services:
 
   web:
     user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      HOME: /tmp
+      XDG_CACHE_HOME: /tmp/.cache
     build:
       context: .
       dockerfile: Dockerfile.dev

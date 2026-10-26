@@ -70,4 +70,29 @@ RSpec.describe Reader, type: :model do
       expect(reader).not_to be_valid
     end
   end
+
+  describe 'associations' do
+    it 'has many borrowings' do
+      reader = create(:reader)
+      borrowing = create(:borrowing, reader: reader)
+
+      expect(reader.borrowings).to contain_exactly(borrowing)
+    end
+
+    it 'has access to borrowed books' do
+      reader = create(:reader)
+      book = create(:book)
+
+      create(:borrowing, reader: reader, book: book)
+
+      expect(reader.books).to contain_exactly(book)
+    end
+
+    it 'does not allow destroying a reader with borrowing history' do
+      reader = create(:reader)
+      create(:borrowing, :returned, reader: reader)
+
+      expect(reader.destroy).to be(false)
+    end
+  end
 end
