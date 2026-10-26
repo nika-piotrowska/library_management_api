@@ -22,5 +22,6 @@ group :development, :test do
   gem 'rubocop-rspec', require: false
 
   gem 'factory_bot_rails'
+  gem 'faker'
   gem 'rspec-rails', '~> 8.0'
 end
