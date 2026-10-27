@@ -40,8 +40,7 @@ class Book < ApplicationRecord
   def generate_serial_number
     return if serial_number.present?
 
-    name = sequence_name
-    n_id = next_id(name)
+    n_id = next_id
 
     if n_id > MAX_SERIAL_NUMBER
       errors.add(:serial_number, 'number range exhausted')
@@ -52,17 +51,9 @@ class Book < ApplicationRecord
     self.serial_number = format('%06d', n_id)
   end
 
-  def sequence_name
-    self.class.connection.quote(
-      self.class.connection.select_value(
-        "SELECT pg_get_serial_sequence('books', 'id')"
-      )
-    )
-  end
-
-  def next_id(name)
+  def next_id
     self.class.connection.select_value(
-      "SELECT nextval(#{name})"
+      "SELECT nextval(pg_get_serial_sequence('books', 'id'))"
     ).to_i
   end
 end

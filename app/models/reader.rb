@@ -24,9 +24,7 @@ class Reader < ApplicationRecord
   def generate_library_card_number
     return if library_card_number.present?
 
-    name = sequence_name
-
-    n_id = next_id(name)
+    n_id = next_id
 
     if n_id > MAX_LIBRARY_CARD_NUMBER
       errors.add(:library_card_number, 'number range exhausted')
@@ -37,17 +35,9 @@ class Reader < ApplicationRecord
     self.library_card_number = format('%06d', n_id)
   end
 
-  def sequence_name
-    self.class.connection.quote(
-      self.class.connection.select_value(
-        "SELECT pg_get_serial_sequence('readers', 'id')"
-      )
-    )
-  end
-
-  def next_id(name)
+  def next_id
     self.class.connection.select_value(
-      "SELECT nextval(#{name})"
+      "SELECT nextval(pg_get_serial_sequence('readers', 'id'))"
     ).to_i
   end
 end
