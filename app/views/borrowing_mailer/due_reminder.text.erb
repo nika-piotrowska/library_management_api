@@ -1,0 +1,13 @@
+
+Hello <%= @borrowing.reader.full_name %>,
+
+Your borrowed book is due for return today.
+
+Book: <%= @borrowing.book.title %>
+Author: <%= @borrowing.book.author %>
+Serial number: <%= @borrowing.book.serial_number %>
+Due date: <%= @borrowing.due_at.to_date %>
+
+Please return the book today.
+
+Library Management System

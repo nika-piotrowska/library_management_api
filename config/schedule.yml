@@ -1,0 +1,6 @@
+borrowing_reminders:
+  cron: '0 9 * * * Europe/Warsaw'
+  class: BorrowingRemindersJob
+  queue: default
+  active_job: true
+  description: 'Send borrowing return reminders'

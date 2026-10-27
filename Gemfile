@@ -10,8 +10,14 @@ gem 'kamal', require: false
 gem 'pg', '~> 1.1'
 gem 'puma', '>= 5.0'
 gem 'rails', '~> 8.1.3'
+gem 'sidekiq'
+gem 'sidekiq-cron'
 gem 'thruster', require: false
 gem 'tzinfo-data', platforms: %i[windows jruby]
+
+group :development do
+  gem 'letter_opener_web', '~> 3.0'
+end
 
 group :development, :test do
   gem 'brakeman', require: false

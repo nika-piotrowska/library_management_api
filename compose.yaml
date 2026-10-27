@@ -24,6 +24,7 @@ services:
     environment:
       HOME: /tmp
       XDG_CACHE_HOME: /tmp/.cache
+      REDIS_URL: redis://redis:6379/0
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -49,5 +50,38 @@ services:
     stdin_open: true
     tty: true
 
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    user: "${UID:-1000}:${GID:-1000}"
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    env_file:
+      - .env
+    environment:
+      HOME: /tmp
+      XDG_CACHE_HOME: /tmp/.cache
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - .:/rails
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+
 volumes:
   postgres_data:
+  redis_data:
